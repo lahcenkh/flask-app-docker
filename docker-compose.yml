@@ -1,0 +1,39 @@
+services:
+  db:
+    image: mysql:8.0
+    environment:
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+    volumes:
+      - mysql:/var/lib/mysql
+      - ./db/init.sql:/docker-entrypoint-initdb.d/init.sql
+    networks:
+      - flask-app-network
+  flask-app:
+    build:
+      context: ./app
+      dockerfile: Dockerfile
+    container_name: flask-app
+    env_file:
+      - ./app/.env
+    depends_on:
+      - db
+    networks:
+      - flask-app-network
+
+  nginx:
+    build:
+      context: ./nginx
+      dockerfile: Dockerfile
+    container_name: nginx
+    ports:
+      - "80:80"
+    depends_on:
+      - flask-app
+    networks:
+      - flask-app-network
+
+volumes:
+  mysql:
+
+networks:
+  flask-app-network:
