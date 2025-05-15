@@ -9,6 +9,12 @@ services:
       - ./db/init.sql:/docker-entrypoint-initdb.d/init.sql
     networks:
       - flask-app-network
+
+  adminer:
+    image: adminer
+    restart: always
+    ports:
+      - 36780:8080
   flask-app:
     build:
       context: ./app
